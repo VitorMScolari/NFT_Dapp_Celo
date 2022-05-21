@@ -31,7 +31,7 @@ const App = function AppWrapper() {
           </Nav>
           <main>
             <Nfts
-              name="GEO Collection"
+              name="VMS Collection"
               updateBalance={getBalance}
               minterContract={minterContract}
             />
