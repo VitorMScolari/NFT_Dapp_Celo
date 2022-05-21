@@ -1,7 +1,7 @@
 {
   "name": "celo-react-boilerplate",
   "version": "0.1.0",
-  "homepage": "https://${vitormscolari}.github.io/${NFT_Dapp_Celo}",
+  "homepage": "https://vitormscolari.github.io/NFT_Dapp_Celo/",
   "private": true,
   "dependencies": {
     "@celo-tools/use-contractkit": "3.0.0-beta2",
