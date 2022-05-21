@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/NFT_Dapp_Celo/static/css/main.e1ce61ea.chunk.css",
-    "main.js": "/NFT_Dapp_Celo/static/js/main.599993fb.chunk.js",
-    "main.js.map": "/NFT_Dapp_Celo/static/js/main.599993fb.chunk.js.map",
+    "main.js": "/NFT_Dapp_Celo/static/js/main.27816850.chunk.js",
+    "main.js.map": "/NFT_Dapp_Celo/static/js/main.27816850.chunk.js.map",
     "runtime-main.js": "/NFT_Dapp_Celo/static/js/runtime-main.76e9fa0e.js",
     "runtime-main.js.map": "/NFT_Dapp_Celo/static/js/runtime-main.76e9fa0e.js.map",
     "static/css/2.b43e328d.chunk.css": "/NFT_Dapp_Celo/static/css/2.b43e328d.chunk.css",
@@ -22,6 +22,6 @@
     "static/css/2.b43e328d.chunk.css",
     "static/js/2.bff178ff.chunk.js",
     "static/css/main.e1ce61ea.chunk.css",
-    "static/js/main.599993fb.chunk.js"
+    "static/js/main.27816850.chunk.js"
   ]
 }
