@@ -108,4 +108,4 @@ NftList.defaultProps = {
 minterContract: null,
 };
 
-    export default NftList;
+export default NftList;

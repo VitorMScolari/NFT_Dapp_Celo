@@ -10,7 +10,7 @@ export const createNft = async (
   ) => {
     await performActions(async (kit) => {
       if (!name || !description || !ipfsImage) return;
-      const { defaultAccount } = kit;
+      const { defaultAccount } = kit; // address of the account that is currently connected to the dapp via the wallet.
   
       // convert NFT metadata to JSON format
       const data = JSON.stringify({
