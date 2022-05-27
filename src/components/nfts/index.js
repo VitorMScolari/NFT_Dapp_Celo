@@ -4,13 +4,13 @@ import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import AddNfts from "./Add";
 import Nft from "./Card";
-import Loader from "../../ui/Loader";
-import { NotificationSuccess, NotificationError } from "../../ui/Notifications";
+import Loader from "../ui/Loader";
+import { NotificationSuccess, NotificationError } from "../ui/Notifications";
 import {
   getNfts,
   createNft,
   fetchNftContractOwner,
-} from "../../../utils/minter";
+} from "../../utils/minter";
 import { Row } from "react-bootstrap";
 
 

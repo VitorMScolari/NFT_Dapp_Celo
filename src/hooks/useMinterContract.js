@@ -1,7 +1,7 @@
 import { useContract } from "./useContract";
-import MyNFTAbi from "../contracts/MyNFT.json";
-import MyNFTContractAddress from "../contracts/MyNFT-address.json";
+import NFTAbi from "../contracts/NFT.json";
+import NFTContractAddress from "../contracts/NFT-address.json";
 
 export const useMinterContract = () =>
-  useContract(MyNFTAbi.abi, MyNFTContractAddress.MyNFT);
+  useContract(NFTAbi.abi, NFTContractAddress.address);
 

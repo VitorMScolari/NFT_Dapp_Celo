@@ -2,20 +2,14 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import PropTypes from "prop-types";
 
-const Cover = ({ name, coverImg, connect }) => {
+const Cover = ({ name, connect }) => {
   if (name) {
     return (
       <div
-        className="d-flex justify-content-center flex-column text-center "
-        style={{ background: "#000", minHeight: "100vh" }}
+        className="d-flex justify-content-center flex-column text-center"
+        style={{ background: "#000", minHeight: "80vh", minWidth: "100vw" }}
       >
-        <div className="mt-auto text-light mb-5">
-          <div
-            className=" ratio ratio-1x1 mx-auto mb-2"
-            style={{ maxWidth: "320px" }}
-          >
-            <img src={coverImg} alt="" />
-          </div>
+        <div className="text-light mb-5 text-center">
           <h1>{name}</h1>
           <p>Please connect your wallet to continue.</p>
           <Button
@@ -26,8 +20,6 @@ const Cover = ({ name, coverImg, connect }) => {
             Connect Wallet
           </Button>
         </div>
-
-        <p className="mt-auto text-secondary">Powered by Celo</p>
       </div>
     );
   }

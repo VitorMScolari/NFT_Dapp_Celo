@@ -67,8 +67,7 @@ export const createNft = async (
             owner,
             name: meta.data.name,
             image: meta.data.image,
-            description: meta.data.description,
-            attributes: meta.data.attributes,
+            description: meta.data.description
           });
         });
         nfts.push(nft);
