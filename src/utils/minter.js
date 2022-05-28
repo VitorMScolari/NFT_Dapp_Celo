@@ -6,7 +6,7 @@ const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 export const createNft = async (
     minterContract,
     performActions,
-    { name, description, ipfsImage, ownerAddress, attributes }
+    { name, description, exteralUrl, ipfsImage, ownerAddress}
   ) => {
     await performActions(async (kit) => {
       if (!name || !description || !ipfsImage) return;
@@ -16,9 +16,9 @@ export const createNft = async (
       const data = JSON.stringify({
         name,
         description,
+        exteralUrl,
         image: ipfsImage,
-        owner: defaultAccount,
-        attributes,
+        owner: defaultAccount
       });
   
       try {

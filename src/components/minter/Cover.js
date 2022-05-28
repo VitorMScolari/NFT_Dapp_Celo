@@ -7,7 +7,7 @@ const Cover = ({ name, connect }) => {
     return (
       <div
         className="d-flex justify-content-center flex-column text-center"
-        style={{ background: "#000", minHeight: "80vh", minWidth: "100vw" }}
+        style={{ background: "#000", minHeight: "85vh", minWidth: "100vw" }}
       >
         <div className="text-light mb-5 text-center">
           <h1>{name}</h1>
