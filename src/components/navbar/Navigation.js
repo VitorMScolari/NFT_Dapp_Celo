@@ -1,15 +1,14 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-import { Button, Navbar } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import {useContractKit} from "@celo-tools/use-contractkit";
-import { useBalance } from "../../hooks";
+import Create  from "../create/Create";
 import './Navigation.css'
 
 
  const Navigation = () => {
 
      const {address, destroy, connect} = useContractKit();
-     const { balance, setBalance } = useBalance();
 
      return (
          <>
@@ -23,9 +22,8 @@ import './Navigation.css'
                     <h1 className="navbar-h1">My NFTs</h1>
                 </Link>
 
-                <Link to="/create" className="navbar-links">
-                    <h1 className="navbar-h1">Create your NFT</h1>
-                </Link>
+                <Create />
+
                 {!address ? (
                     <>
                         <Button type='button' onClick={connect} variant="outline-dark" className="navbar-btn rounded-pill px-5 m-1">Connect Wallet</Button>

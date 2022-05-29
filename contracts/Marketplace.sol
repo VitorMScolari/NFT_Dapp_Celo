@@ -94,6 +94,42 @@ contract Marketplace is ReentrancyGuard {
             msg.sender
         );
     }
+
+    /* allows someone to remove a token they have purchased */
+    function removeItem(uint256 _itemId) public payable {
+        require(!items[_itemId].sold, "item already sold");
+        require(items[_itemId].seller == msg.sender, "Only item owner can perform this operation");
+        
+        // update item to sold
+        items[_itemId].sold = true;
+        // transfer nft to buyer
+        items[_itemId].nft.transferFrom(address(this), msg.sender, items[_itemId].tokenId);
+        // emit Bought event
+        emit Bought(
+            _itemId,
+            address(items[_itemId].nft),
+            items[_itemId].tokenId,
+            items[_itemId].price,
+            items[_itemId].seller,
+            msg.sender
+        );
+    }
+
+    /* Returns all unsold market items */
+    function fetchMarketItems() public view returns (Item[] memory) {
+        uint currentIndex = 0;
+
+        Item[] memory allItems = new Item[](itemCount);
+        for (uint i = 0; i < itemCount; i++) {
+            uint currentId = items[i + 1].itemId;
+            Item storage currentItem = items[currentId];
+            allItems[currentIndex] = currentItem;
+            currentIndex += 1;
+        }
+
+        return allItems;
+    }
+
     function getTotalPrice(uint _itemId) view public returns(uint){
         return((items[_itemId].price*(100 + feePercent))/100);
     }

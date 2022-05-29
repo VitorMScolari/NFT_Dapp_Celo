@@ -3,7 +3,6 @@ import {BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from './components/navbar/Navigation';
 import Explore from './components/explore/Explore';
 import Profile from './components/profile/Profile';
-import Create from './components/create/Create';
 import "./App.css";
 
 
@@ -15,8 +14,9 @@ const App = function AppWrapper() {
       <BrowserRouter>
         <Navigation />
         <Routes>
+        <Route path="/" exact element={<Explore />} />
+          <Route path="/NFT_Dapp_Celo" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/create" element={<Create />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </BrowserRouter>

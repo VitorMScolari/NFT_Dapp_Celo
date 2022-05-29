@@ -53,7 +53,7 @@ describe("NFT", function () {
     });
 
     const tokenURI = "https://example.com/1";
-    const tx = await myNFT.connect(owner).safeMint(acc1.address, tokenURI, {value: toWei(0.08)});
+    const tx = await myNFT.connect(owner).safeMint(acc1.address, tokenURI);
     await tx.wait();
 
     expect(await myNFT.balanceOf(acc1.address)).to.equal(1);
@@ -73,9 +73,9 @@ describe("NFT", function () {
       value: ethers.utils.parseEther("10.0"),
     });
 
-    const tx1 = await myNFT.connect(owner).safeMint(acc1.address, tokenURI_1, {value: toWei(0.08)});
+    const tx1 = await myNFT.connect(owner).safeMint(acc1.address, tokenURI_1);
     await tx1.wait();
-    const tx2 = await myNFT.connect(owner).safeMint(acc2.address, tokenURI_2, {value: toWei(0.08)});
+    const tx2 = await myNFT.connect(owner).safeMint(acc2.address, tokenURI_2);
     await tx2.wait();
 
     expect(await myNFT.tokenURI(0)).to.equal(tokenURI_1);
@@ -136,7 +136,7 @@ describe("NFTMarketplace", function () {
       });
   
       // addr1 mints an nft
-      await nft.connect(deployer).safeMint(addr1.address, URI, {value: toWei(0.08)});
+      await nft.connect(deployer).safeMint(addr1.address, URI);
 
       // addr1 approves marketplace to spend nft
       await nft.connect(addr1).setApprovalForAll(marketplace.address, true)
@@ -185,7 +185,7 @@ describe("NFTMarketplace", function () {
       });
   
       // addr1 mints an nft
-      await nft.connect(deployer).safeMint(addr1.address, URI, {value: toWei(0.08)});
+      await nft.connect(deployer).safeMint(addr1.address, URI);
       // addr1 approves marketplace to spend tokens
       await nft.connect(addr1).setApprovalForAll(marketplace.address, true)
       // addr1 makes their nft a marketplace item.
@@ -240,6 +240,15 @@ describe("NFTMarketplace", function () {
         marketplace.connect(addr3).purchaseItem(1, {value: totalPriceInWei})
       ).to.be.revertedWith("item already sold");
     });
+
+    it("Should fetch all market items", async function() {
+      const data = await marketplace.connect(deployer).fetchMarketItems()
+    })
+
+    it("Should remove item from marketplace", async function() {
+      const data = await marketplace.connect(deployer).removeItem(0)
+    })
+
   })
 })
 

@@ -15,7 +15,6 @@ contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment
 
     // Constants
     uint256 public constant TOTAL_SUPPLY = 10_000;
-    uint256 public constant MINT_PRICE = 0.08 ether;
 
     /// @dev Base token URI used as a prefix by tokenURI().
     string public baseTokenURI;
@@ -24,10 +23,9 @@ contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment
         baseTokenURI = "";
     }
 
-    function safeMint(address to, string memory uri) public payable onlyOwner {
+    function safeMint(address to, string memory uri) public payable {
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId < TOTAL_SUPPLY, "Max supply reached");
-        require(msg.value == MINT_PRICE, "Transaction value did not equal the mint price");
 
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);

@@ -1,10 +1,15 @@
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import axios from "axios";
+import NFTContractAddress from "../contracts/NFT-address.json";
+import MarketplaceContractAddress from "../contracts/Marketplace-address.json";
+import { ethers } from "ethers";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
 export const createNft = async (
     minterContract,
+    marketContract,
+    price,
     performActions,
     { name, description, exteralUrl, ipfsImage, ownerAddress}
   ) => {
@@ -27,15 +32,36 @@ export const createNft = async (
   
         // IPFS url for uploaded metadata
         const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-  
+
+
         // mint the NFT and save the IPFS url to the blockchain
         let transaction = await minterContract.methods
           .safeMint(ownerAddress, url)
           .send({ from: defaultAccount });
+
+        console.log(transaction['events'])
+
+        let event = transaction['events']['Transfer']
+        let value = event["returnValues"]["tokenId"]
+        let tokenId = parseInt(value)
+
+        
+        let listing = await marketContract.methods
+        .makeItem(transaction, tokenId, price)
+        .send({ from: defaultAccount });
+        
+        console.log(listing)
+        
+
+        /*
+        await(await minterContract.methods.setApprovalForAll(marketContract.address, true)).wait()
+        // add nft to marketplace
+        const listingPrice = ethers.utils.parseEther(price.toString())
+        await(await marketContract.methods.makeItem(minterContract.address, tokenId, listingPrice)).wait()
+        */
   
-        return transaction;
       } catch (error) {
-        console.log("Error uploading file: ", error);
+        console.log("Error listing NFT: ", error);
       }
     });
   };

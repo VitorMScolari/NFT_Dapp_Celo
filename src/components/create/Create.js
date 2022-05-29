@@ -1,24 +1,56 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
+import { useContractKit } from "@celo-tools/use-contractkit";
+import { toast } from "react-toastify";
+import { NotificationSuccess,  NotificationError} from "../ui/Notifications";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 import { uploadToIpfs } from "../../utils/minter";
+import { useMinterContract } from "../../hooks";
+import {useMarketContract} from "../../hooks/useMarketContract";
+import { createNft } from "../../utils/minter";
 
 
-const AddNfts = ({ save, address }) => {
+const AddNfts = () => {
   const [description, setDescription] = useState("");
   const [exteralUrl, setExteralUrl] = useState("");
   const [ipfsImage, setIpfsImage] = useState("");
   const [name, setName] = useState("");
   const [show, setShow] = useState(false);
 
-      // check if all form data has been filled
+  const [price, setPrice] = useState(0);
+
+  const { performActions, address } = useContractKit();
+  const minterContract = useMinterContract();
+  const marketContract = useMarketContract();
+
+
+  // check if all form data has been filled
   const isFormFilled = () =>
-  name && ipfsImage && description;
+  name && ipfsImage && description && price;
 
   // close the popup modal
   const handleClose = () => {
     setShow(false);
   };
+
+  const addNft = async (data) => {
+    try {
+        await createNft(minterContract, marketContract, price, performActions, data);
+        toast(<NotificationSuccess text="Updating NFT list...." />);
+      } catch (error) {
+        console.log({ error });
+        toast(<NotificationError text="Failed to create an NFT." />);
+      }
+    };
+
+  const getPrice = (e) => {
+    try {
+      const listingPrice = parseFloat(e)
+      setPrice(listingPrice);
+    } catch (error) {
+      console.log({ error })
+      toast(<NotificationError text="Price must be a Number." />);
+    }
+  }
 
   // display the popup modal
   const handleShow = () => setShow(true);
@@ -28,7 +60,7 @@ const AddNfts = ({ save, address }) => {
       <Button
         onClick={handleShow}
         variant="dark"
-        className="rounded-pill px-2"
+        className="rounded-pill px-4"
       >
         Create your NFT
       </Button>
@@ -99,6 +131,24 @@ const AddNfts = ({ save, address }) => {
               placeholder="Product name"
             ></Form.Control>
           </Form>
+
+          <FloatingLabel
+              controlId="InputPrice"
+              label="Price"
+              className="mb-3"
+            >
+              <Form.Control
+                as="textarea"
+                placeholder="Listing Price for your NFT"
+                style={{ height: "80px" }}
+                onChange={(e) => {
+                  getPrice(e.target.value);
+                }}
+              />
+              <select>
+                  <option value="CELO">CELO</option>
+              </select>
+            </FloatingLabel>
         </Modal.Body>
 
         <Modal.Footer>
@@ -109,11 +159,11 @@ const AddNfts = ({ save, address }) => {
             variant="dark"
             disabled={!isFormFilled()}
             onClick={() => {
-              save({
+              addNft({
                 name,
-                ipfsImage,
                 description,
                 exteralUrl,
+                ipfsImage,
                 ownerAddress: address
               });
               handleClose();
@@ -127,10 +177,4 @@ const AddNfts = ({ save, address }) => {
   );
 };
 
-
-AddNfts.propTypes = {
-    save: PropTypes.func.isRequired,
-    address: PropTypes.string.isRequired,
-};
-  
 export default AddNfts;

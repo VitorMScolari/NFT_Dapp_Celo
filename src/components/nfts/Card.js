@@ -5,13 +5,13 @@ import { truncateAddress } from "../../utils";
 import Identicon from "../ui/Identicon";
 
 const NftCard = ({ nft }) => {
-  const { image, description, exteralUrl, owner, name, index } = nft;
+  const { image, description, exteralUrl, owner, name, price, index } = nft;
 
   return (
-    <Col key={index}>
-      <Card className=" h-100">
+    <Col key={index} className="p-10 w-5 h-6">
+      <Card className="h-100">
         <Card.Header>
-          <Stack direction="horizontal" gap={2}>
+          <Stack direction="horizontal" gap={5}>
             <Identicon address={owner} size={28} />
             <span className="font-monospace text-secondary">
               {truncateAddress(owner)}
@@ -23,13 +23,14 @@ const NftCard = ({ nft }) => {
         </Card.Header>
 
         <div className=" ratio ratio-4x3">
-          <img src={image} alt={description} style={{ objectFit: "cover" }} />
+          <img src={image} alt={description} />
         </div>
 
         <Card.Body className="d-flex  flex-column text-center">
           <Card.Title>{name}</Card.Title>
           <Card.Text className="flex-grow-1">{description}</Card.Text>
           <Card.Text className="flex-grow-1">{exteralUrl}</Card.Text>
+          <Card.Text className="flex-grow-1">{price}</Card.Text>
         </Card.Body>
       </Card>
     </Col>
