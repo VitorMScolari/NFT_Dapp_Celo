@@ -7,10 +7,12 @@ import { useMarketContract } from "../../hooks/useMarketContract";
 import { useMinterContract } from "../../hooks/useMinterContract";
 import axios from "axios";
 import {ethers} from "ethers";
+import { useContractKit } from "@celo-tools/use-contractkit";
 import './Explore.css';
 import {
-    getNfts,
-  } from "../../utils/minter";
+    getNfts
+} from "../../utils/minter";
+
 
 
 
@@ -18,49 +20,63 @@ const Explore = () => {
     const [nfts, setNfts] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const { address } = useContractKit();
     const marketContract = useMarketContract();
     const minterContract = useMinterContract();
 
     const getAssets = useCallback(async () => {
         try {
-            /*
+            
             setLoading(true);
             const data = await marketContract.methods.fetchMarketItems().call()
-            console.log({data})
             const items = await Promise.all(data.map(async marketItem => {
                 const tokenId = Number(marketItem.tokenId)
-                const tokenURI = await marketContract.methods.tokenURI(tokenId).call()
+                const tokenURI = await minterContract.methods.tokenURI(tokenId).call()
 
                 const seller = marketItem.seller
                 const meta = await axios.get(tokenURI)
-                let price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether')
+                let price = ethers.utils.formatUnits(marketItem.price, 'wei')
 
                 return {
                     image: meta.data.image,
                     description: meta.data.description,
                     externalUrl: meta.data.externalUrl,
-                    seller,
+                    seller: seller,
                     name: meta.data.name,
-                    price,
-                    tokenURI
+                    price: price,
+                    tokenURI: tokenURI,
+                    tokenId: tokenId,
+                    itemId: marketItem.itemId,
                 }
             }))
-            setNfts(items);
-            */            
-
+            if (!items) return;
             
+            await items.map(nft => {
+              nft['remove'] = true
+              console.log(nft)
+              return address.toLowerCase() === nft.seller.toLowerCase() ? nft['remove'] = true : nft['remove'] = false
+            })
+            // console.log(items)
+            setNfts(items);
+                      
+
+            /*
             setLoading(true);
             const allNfts = await getNfts(minterContract);
+            await allNfts.map(nft => {
+              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['remove'] = true : nft['remove'] = false
+            })
+
             if (!allNfts) return;
             setNfts(allNfts);
+            */
             
         } catch (error) {
           console.log({ error });
         } finally {
           setLoading(false);
         }
-      }, [minterContract]);
-
+      }, [minterContract, marketContract, address]);
 
       useEffect(() => {
         try {
@@ -73,24 +89,31 @@ const Explore = () => {
       }, [marketContract, getAssets]);
 
     return (
-        <div className="explore-div">
+        <>
         {!loading ? (
-            <>
-            <Row xs={1} sm={2} lg={3} className="p-5">
+            <div className="explore-div">
+            {nfts.length >= 1 ? (
+            <Row xs={1} sm={1} lg={1} className="w-100">
                 {nfts.map((_nft) => (
-                <Nft
-                    key={_nft.index}
-                    nft={{
-                    ..._nft,
-                    }}
-                />
+                    <Nft
+                        key={_nft.tokenId}
+                        nft={{
+                        ..._nft,
+                        }}
+                    />
                 ))}
             </Row>
-            </>
+            ) : (
+                <div>
+                    <h1>No NFT's on the Market yet, click the Create your NFT button to create one.</h1>
+                </div>
+            )
+            }
+            </div>
         ) : (
             <Loader />
         )}
-        </div>
+        </>
     );
     };
     

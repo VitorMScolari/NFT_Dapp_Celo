@@ -130,7 +130,6 @@ const AddNfts = () => {
               }}
               placeholder="Product name"
             ></Form.Control>
-          </Form>
 
           <FloatingLabel
               controlId="InputPrice"
@@ -149,6 +148,7 @@ const AddNfts = () => {
                   <option value="CELO">CELO</option>
               </select>
             </FloatingLabel>
+          </Form>
         </Modal.Body>
 
         <Modal.Footer>

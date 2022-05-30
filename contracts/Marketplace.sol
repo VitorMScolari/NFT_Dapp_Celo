@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.2;
 
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "hardhat/console.sol";
 
@@ -46,7 +46,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     // Make item to offer on the marketplace
-    function makeItem(IERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
+    function makeItem(ERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
         require(_price > 0, "Price must be greater than zero");
         // increment itemCount
         itemCount ++;
@@ -96,7 +96,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     /* allows someone to remove a token they have purchased */
-    function removeItem(uint256 _itemId) public payable {
+    function removeItem(uint256 _itemId) public nonReentrant{
         require(!items[_itemId].sold, "item already sold");
         require(items[_itemId].seller == msg.sender, "Only item owner can perform this operation");
         

@@ -73,5 +73,10 @@ contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment
         super.withdrawPayments(payee);
     }
 
+    /// @dev Overridden in order to allow the NFT owner to make their NFT available on the market
+    function setApprovalForAll(address operator, bool approved) public virtual override(ERC721) {
+        super._setApprovalForAll(msg.sender, operator, approved);
+    }
+
 }
 
