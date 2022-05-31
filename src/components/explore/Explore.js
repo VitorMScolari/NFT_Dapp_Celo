@@ -8,10 +8,8 @@ import { useMinterContract } from "../../hooks/useMinterContract";
 import axios from "axios";
 import {ethers} from "ethers";
 import { useContractKit } from "@celo-tools/use-contractkit";
+import { RingLoader } from "react-spinners";
 import './Explore.css';
-import {
-    getNfts
-} from "../../utils/minter";
 
 
 
@@ -54,7 +52,7 @@ const Explore = () => {
             await items.map(nft => {
               nft['remove'] = true
               console.log(nft)
-              return address.toLowerCase() === nft.seller.toLowerCase() ? nft['remove'] = true : nft['remove'] = false
+              return address.toLowerCase() === nft.seller.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
             })
             // console.log(items)
             setNfts(items);
@@ -64,7 +62,7 @@ const Explore = () => {
             setLoading(true);
             const allNfts = await getNfts(minterContract);
             await allNfts.map(nft => {
-              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['remove'] = true : nft['remove'] = false
+              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
             })
 
             if (!allNfts) return;
@@ -91,24 +89,25 @@ const Explore = () => {
     return (
         <>
         {!loading ? (
-            <div className="explore-div">
-            {nfts.length >= 1 ? (
-            <Row xs={1} sm={1} lg={1} className="w-100">
-                {nfts.map((_nft) => (
-                    <Nft
-                        key={_nft.tokenId}
-                        nft={{
-                        ..._nft,
-                        }}
-                    />
-                ))}
-            </Row>
-            ) : (
-                <div>
-                    <h1>No NFT's on the Market yet, click the Create your NFT button to create one.</h1>
-                </div>
-            )
-            }
+            <div className="explore-section">
+              {nfts.length >= 1 ? (
+              <Row xs={1} sm={1} lg={1} className="w-100">
+                  {nfts.map((_nft) => (
+                      <Nft
+                          key={_nft.tokenId}
+                          nft={{
+                          ..._nft,
+                          }}
+                      />
+                  ))}
+              </Row>
+              ) : (
+                  <div className="nonfts-div">
+                      {<RingLoader color={"green"} size={150} />}
+                      <span className="nonfts-text">No NFTs yet <br /> Create one to display</span>
+                  </div>
+              )
+              }
             </div>
         ) : (
             <Loader />

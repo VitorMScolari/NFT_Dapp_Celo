@@ -1,28 +1,25 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Card, Col, Badge, Stack, Button, Modal, Form, FloatingLabel  } from "react-bootstrap";
 import { truncateAddress } from "../../utils";
 import Identicon from "../ui/Identicon";
 import { toast } from "react-toastify";
 import { NotificationSuccess,  NotificationError} from "../ui/Notifications";
-import { useMinterContract } from "../../hooks";
 import {useMarketContract} from "../../hooks/useMarketContract";
-import { createMarketItem } from "../../utils/minter";
 import { useContractKit } from "@celo-tools/use-contractkit";
-import MarketplaceContractAddress from "../../contracts/Marketplace-address.json";
+import { ethers } from "ethers";
 
 const NftCard = ({ nft }) => {
   // const { image, description, externalUrl, owner, name, price, tokenId } = nft;
 
-  const [relist, setRelist] = useState(false)
-  const { address } = useContractKit();
+  const { address, performActions } = useContractKit();
+  const navigate = useNavigate()
 
   const [show, setShow] = useState(false);
 
   const [price, setPrice] = useState(0);
   const marketContract = useMarketContract();
-  const minterContract = useMinterContract();
-
 
   // check if all form data has been filled
   const isFormFilled = () =>
@@ -35,26 +32,19 @@ const NftCard = ({ nft }) => {
 
   const relistNft = async () => {
     try {
-        const createItem = await createMarketItem(nft.seller, minterContract, marketContract, price, nft.tokenId);
-        if (!createItem) return;
-        setRelist(false);
+
+        await performActions(async (kit) => {
+          /* user will be prompted to pay the asking proces to complete the transaction */
+          console.log({price})
+          const relistItem = await marketContract.methods.relistItem(nft.tokenId, price).send({ from: address });
+          if (!relistItem) alert("Failed to Re-List NFT." );
+        })
         toast(<NotificationSuccess text="Updating NFT list...." />);
+        navigate(`/`)
       } catch (error) {
         console.log({ error });
         alert("Failed to Re-List NFT." )
         toast(<NotificationError text="Failed to Re-List NFT." />);
-      }
-    };
-
-  const removeNft = async () => {
-    try {
-        // await minterContract.methods.setApprovalForAll(MarketplaceContractAddress.address, true).send({ from: nft.seller })
-        await marketContract.methods.removeItem(nft.tokenId).send({ from: nft.seller });
-        setRelist(true)
-      } catch (error) {
-        console.log({ error });
-        alert("Failed to Remove NFT." )
-        toast(<NotificationError text="Failed to Remove NFT." />);
       }
     };
 
@@ -63,7 +53,19 @@ const NftCard = ({ nft }) => {
     try {
         console.log(nft.itemId)
         const id = parseInt(nft.itemId)
-        await marketContract.methods.purchaseItem(id).send({ from: address });
+
+        await performActions(async (kit) => {
+          const { defaultAccount } = kit;
+          /* user will be prompted to pay the asking proces to complete the transaction */
+          const nftPrice =( ethers.utils.parseUnits(nft.price, 'ether')).toString()
+          console.log({nftPrice})
+          await marketContract.methods.purchaseItem(id).send({ from: defaultAccount, value: nftPrice });
+
+          alert(`You have successfully purchased this NFT!`)
+          navigate(`/profile`)
+        })
+
+        nft.remove = true
       } catch (error) {
         console.log({ error });
         alert("Failed to Buy NFT." )
@@ -75,8 +77,9 @@ const NftCard = ({ nft }) => {
 
   const getPrice = (e) => {
     try {
-      const listingPrice = parseFloat(e)
-      setPrice(listingPrice);
+      const priceFormatted = (ethers.utils.parseUnits(e, 'ether')).toString()
+      // const listingPrice = parseFloat(e)
+      setPrice(priceFormatted);
     } catch (error) {
       console.log({ error })
       toast(<NotificationError text="Price must be a Number." />);
@@ -88,13 +91,13 @@ const NftCard = ({ nft }) => {
 
 
   return (
-    <Col xs={5} sm={3} lg={3} xl={2} key={nft.tokenId} className="p-1 m-2">
+    <Col xs={5} sm={3} lg={3} xl={2} key={nft.tokenId} className="p-1 m-5">
       <Card className="h-100">
         <Card.Header>
           <Stack direction="horizontal" className="w-5" gap={3}>
-            <Identicon address={nft.owner} size={22} />
+            <Identicon address={nft.seller} size={22} />
             <span className="font-monospace text-secondary">
-              {truncateAddress(nft.owner)}
+              {truncateAddress(nft.seller)}
             </span>
             <Badge bg="secondary" className="ms-auto">
               {nft.tokenId} ID
@@ -113,16 +116,15 @@ const NftCard = ({ nft }) => {
           <Card.Text className="flex-grow-1">{nft.exteralUrl}</Card.Text>
         </Card.Body>
         <Card.Footer className="d-flex  flex-row justify-content-center text-center">
-          {!nft.remove && <Button variant="outline-dark" className="rounded-pill px-4 mx-2 card-btn" onClick={buyNft}>Buy</Button>}
-          {nft.remove && !relist && <Button variant="outline-dark" className=" rounded-pill px-2 card-btn" onClick={removeNft}>Remove From Market</Button>}
-          {relist && (
+          {!nft.relist && <Button variant="outline-dark" className="rounded-pill px-4 mx-2 card-btn" onClick={buyNft}>Buy</Button>}
+          {nft.relist && (
             <>
             <Button
               onClick={handleShow}
               variant="dark"
               className="rounded-pill px-4 card-btn"
             >
-              Re-List your NFT
+              Change price
             </Button>
       
             {/* Modal */}

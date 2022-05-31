@@ -59,10 +59,10 @@ const AddNfts = () => {
     <>
       <Button
         onClick={handleShow}
-        variant="dark"
-        className="rounded-pill px-4"
+        variant="outline-dark"
+        className="rounded-pill px-5 m-2"
       >
-        Create your NFT
+        Create NFT
       </Button>
 
       {/* Modal */}
@@ -72,7 +72,7 @@ const AddNfts = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <Form>
+          <Form onSubmit={(e) => e.preventDefault()}>
             <FloatingLabel
               controlId="inputLocation"
               label="Name"

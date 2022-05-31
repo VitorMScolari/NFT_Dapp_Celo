@@ -1,8 +1,9 @@
-.navbar-links-div {
+.navbar-main {
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.2rem;
+    justify-content: space-between;
+    font-size: 1.1rem;
     font-weight: bold;
     border: 1px solid black;
     color: #000;
@@ -10,15 +11,21 @@
     text-decoration: none;
 }
 
-.navbar-links {
+.div-links {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
-    font-size: 1.2rem;
+    width: 50%;
+}
+
+
+.navbar-links {
+    text-align: center;
+    font-size: 1.5rem;
     width: 100%;
-    font-weight: bold;
     color: #000;
+    border: 1px solid black;
+    border-radius: 50%;
     cursor: pointer;
     text-decoration: none;
     transition: all 0.3s ease 0s;
@@ -28,4 +35,3 @@
     background-color: #000;
     color: #fff;
 }
-

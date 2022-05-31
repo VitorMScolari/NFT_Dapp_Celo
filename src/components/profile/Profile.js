@@ -8,10 +8,8 @@ import { useMinterContract } from "../../hooks/useMinterContract";
 import axios from "axios";
 import {ethers} from "ethers";
 import { useContractKit } from "@celo-tools/use-contractkit";
+import { RingLoader } from "react-spinners";
 import '../explore/Explore.css';
-import {
-    getNfts
-} from "../../utils/minter";
 
 
 
@@ -25,50 +23,58 @@ const Profile = () => {
     const minterContract = useMinterContract();
 
     const getAssets = useCallback(async () => {
-        try {
+      try {
+          
+          setLoading(true);
+          const data = await marketContract.methods.fetchMarketItems().call()
+          const items = await Promise.all(data.map(async marketItem => {
+              const tokenId = Number(marketItem.tokenId)
+              const tokenURI = await minterContract.methods.tokenURI(tokenId).call()
+
+              const seller = marketItem.seller
+              const meta = await axios.get(tokenURI)
+              let price = ethers.utils.formatUnits(marketItem.price, 'wei')
+
+              return {
+                  image: meta.data.image,
+                  description: meta.data.description,
+                  externalUrl: meta.data.externalUrl,
+                  seller: seller,
+                  name: meta.data.name,
+                  price: price,
+                  tokenURI: tokenURI,
+                  tokenId: tokenId,
+                  itemId: marketItem.itemId,
+              }
+          }))
+          if (!items) return;
+
+          const profileItems = await items.filter(nft => {return address.toLowerCase() === nft.seller.toLowerCase()})
+          
+          await profileItems.map(nft => nft['relist'] = true)
+          console.log(profileItems)
+          setNfts(profileItems);
+                      
+
             /*
-            setLoading(true);
-            const data = await marketContract.methods.fetchMarketItems().call()
-            console.log({data})
-            const items = await Promise.all(data.map(async marketItem => {
-                const tokenId = Number(marketItem.tokenId)
-                const tokenURI = await marketContract.methods.tokenURI(tokenId).call()
-
-                const seller = marketItem.seller
-                const meta = await axios.get(tokenURI)
-                let price = ethers.utils.formatUnits(marketItem.price.toString(), 'ether')
-
-                return {
-                    image: meta.data.image,
-                    description: meta.data.description,
-                    externalUrl: meta.data.externalUrl,
-                    seller,
-                    name: meta.data.name,
-                    price,
-                    tokenURI
-                }
-            }))
-            setNfts(items);
-            */            
-
-            
             setLoading(true);
             const allNfts = await getNfts(minterContract);
             await allNfts.map(nft => {
-              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['remove'] = true : nft['remove'] = false
+              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
             })
 
             const myNfts = await allNfts.filter(nft => address.toLowerCase() === nft.owner.toLowerCase())
 
             if (!allNfts) return;
             setNfts(myNfts);
+            */
             
         } catch (error) {
           console.log({ error });
         } finally {
           setLoading(false);
         }
-      }, [minterContract, address]);
+      }, [minterContract, marketContract, address]);
 
       useEffect(() => {
         try {
@@ -82,7 +88,7 @@ const Profile = () => {
       }, [minterContract, getAssets]);
 
     return (
-        <div className="Profile-div">
+        <div className="explore-section">
         {!loading ? (
             <>
             {nfts.length >= 1 ? (
@@ -97,8 +103,9 @@ const Profile = () => {
                 ))}
             </Row>
             ) : (
-                <div>
-                    <h1>You don´t have any NFT´s yet, click the Create your NFT button to create one.</h1>
+                <div className="nonfts-div">
+                    {<RingLoader color={"green"} size={150} />}
+                    <span className="nonfts-text">No NFTs yet <br /> Create one to display</span>
                 </div>
             )
             }

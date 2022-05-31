@@ -11,6 +11,7 @@ contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount; // the account that receives fees
     uint public immutable feePercent; // the fee percentage on sales 
     uint public itemCount; 
+    uint256 listingPrice = 0.1 ether;
 
     struct Item {
         uint itemId;
@@ -72,7 +73,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     function purchaseItem(uint _itemId) external payable nonReentrant {
-        uint _totalPrice = getTotalPrice(_itemId);
+        uint _totalPrice = (items[_itemId].price*(100 + feePercent))/100;
         Item storage item = items[_itemId];
         require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
         require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
@@ -93,26 +94,16 @@ contract Marketplace is ReentrancyGuard {
             item.seller,
             msg.sender
         );
+        // update seller to be the buyer
+        item.seller = payable(msg.sender);
     }
 
-    /* allows someone to remove a token they have purchased */
-    function removeItem(uint256 _itemId) public nonReentrant{
-        require(!items[_itemId].sold, "item already sold");
-        require(items[_itemId].seller == msg.sender, "Only item owner can perform this operation");
-        
-        // update item to sold
-        items[_itemId].sold = true;
-        // transfer nft to buyer
-        items[_itemId].nft.transferFrom(address(this), msg.sender, items[_itemId].tokenId);
-        // emit Bought event
-        emit Bought(
-            _itemId,
-            address(items[_itemId].nft),
-            items[_itemId].tokenId,
-            items[_itemId].price,
-            items[_itemId].seller,
-            msg.sender
-        );
+    /* allows someone to resell a token they have purchased */
+    function relistItem(uint tokenId, uint price) public payable {
+        require(items[tokenId].seller == msg.sender, "Only item owner can perform this operation");
+        require(msg.value >= listingPrice, "Price must be equal to listing price");
+        items[tokenId].sold = false;
+        items[tokenId].price = price;
     }
 
     /* Returns all unsold market items */
@@ -129,9 +120,4 @@ contract Marketplace is ReentrancyGuard {
 
         return allItems;
     }
-
-    function getTotalPrice(uint _itemId) view public returns(uint){
-        return((items[_itemId].price*(100 + feePercent))/100);
-    }
-    
 }
