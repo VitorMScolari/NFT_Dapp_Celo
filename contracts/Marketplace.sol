@@ -11,7 +11,6 @@ contract Marketplace is ReentrancyGuard {
     address payable public immutable feeAccount; // the account that receives fees
     uint public immutable feePercent; // the fee percentage on sales 
     uint public itemCount; 
-    uint256 listingPrice = 0.1 ether;
 
     struct Item {
         uint itemId;
@@ -98,10 +97,10 @@ contract Marketplace is ReentrancyGuard {
         item.seller = payable(msg.sender);
     }
 
-    /* allows someone to resell a token they have purchased */
-    function relistItem(uint tokenId, uint price) public payable {
+    /* allows someone to resell a token they have purchased,
+     use itemId on the frontend instead of tokenId to call this function */
+    function relistItem(uint tokenId, uint price) external nonReentrant {
         require(items[tokenId].seller == msg.sender, "Only item owner can perform this operation");
-        require(msg.value >= listingPrice, "Price must be equal to listing price");
         items[tokenId].sold = false;
         items[tokenId].price = price;
     }

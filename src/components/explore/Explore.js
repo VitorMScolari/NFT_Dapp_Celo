@@ -33,7 +33,7 @@ const Explore = () => {
 
                 const seller = marketItem.seller
                 const meta = await axios.get(tokenURI)
-                let price = ethers.utils.formatUnits(marketItem.price, 'wei')
+                let price = ethers.utils.formatUnits(marketItem.price, 'ether')
 
                 return {
                     image: meta.data.image,
@@ -54,20 +54,8 @@ const Explore = () => {
               console.log(nft)
               return address.toLowerCase() === nft.seller.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
             })
-            // console.log(items)
-            setNfts(items);
-                      
 
-            /*
-            setLoading(true);
-            const allNfts = await getNfts(minterContract);
-            await allNfts.map(nft => {
-              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
-            })
-
-            if (!allNfts) return;
-            setNfts(allNfts);
-            */
+            setNfts(items);               
             
         } catch (error) {
           console.log({ error });

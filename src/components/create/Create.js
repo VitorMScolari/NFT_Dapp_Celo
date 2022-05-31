@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useContractKit } from "@celo-tools/use-contractkit";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { NotificationSuccess,  NotificationError} from "../ui/Notifications";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
@@ -7,6 +8,7 @@ import { uploadToIpfs } from "../../utils/minter";
 import { useMinterContract } from "../../hooks";
 import {useMarketContract} from "../../hooks/useMarketContract";
 import { createNft } from "../../utils/minter";
+import { ethers } from "ethers";
 
 
 const AddNfts = () => {
@@ -15,6 +17,7 @@ const AddNfts = () => {
   const [ipfsImage, setIpfsImage] = useState("");
   const [name, setName] = useState("");
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
 
   const [price, setPrice] = useState(0);
 
@@ -36,6 +39,7 @@ const AddNfts = () => {
     try {
         await createNft(minterContract, marketContract, price, performActions, data);
         toast(<NotificationSuccess text="Updating NFT list...." />);
+        navigate(`/profile`)
       } catch (error) {
         console.log({ error });
         toast(<NotificationError text="Failed to create an NFT." />);
@@ -44,7 +48,7 @@ const AddNfts = () => {
 
   const getPrice = (e) => {
     try {
-      const listingPrice = parseFloat(e)
+      const listingPrice = ethers.utils.parseEther(e.toString())
       setPrice(listingPrice);
     } catch (error) {
       console.log({ error })

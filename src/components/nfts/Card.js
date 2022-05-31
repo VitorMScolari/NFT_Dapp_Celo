@@ -35,12 +35,12 @@ const NftCard = ({ nft }) => {
 
         await performActions(async (kit) => {
           /* user will be prompted to pay the asking proces to complete the transaction */
-          console.log({price})
-          const relistItem = await marketContract.methods.relistItem(nft.tokenId, price).send({ from: address });
+          console.log(price)
+          const relistItem = await marketContract.methods.relistItem(nft.itemId, price).send({ from: address  });
           if (!relistItem) alert("Failed to Re-List NFT." );
         })
         toast(<NotificationSuccess text="Updating NFT list...." />);
-        navigate(`/`)
+        navigate(`/explore`)
       } catch (error) {
         console.log({ error });
         alert("Failed to Re-List NFT." )
@@ -51,15 +51,16 @@ const NftCard = ({ nft }) => {
 
   const buyNft = async () => {
     try {
-        console.log(nft.itemId)
         const id = parseInt(nft.itemId)
 
         await performActions(async (kit) => {
           const { defaultAccount } = kit;
           /* user will be prompted to pay the asking proces to complete the transaction */
-          const nftPrice =( ethers.utils.parseUnits(nft.price, 'ether')).toString()
-          console.log({nftPrice})
-          await marketContract.methods.purchaseItem(id).send({ from: defaultAccount, value: nftPrice });
+          const marketFee = 1;
+          const nftMarketPrice = (nft.price*(100 + marketFee))/100;
+          const _totalPrice =( ethers.utils.parseUnits(nftMarketPrice.toString(), 'ether')).toString();
+          console.log(_totalPrice)
+          await marketContract.methods.purchaseItem(id).send({ from: defaultAccount, value: _totalPrice });
 
           alert(`You have successfully purchased this NFT!`)
           navigate(`/profile`)
@@ -77,7 +78,8 @@ const NftCard = ({ nft }) => {
 
   const getPrice = (e) => {
     try {
-      const priceFormatted = (ethers.utils.parseUnits(e, 'ether')).toString()
+      // const priceFormatted = ethers.utils.parseUnits(e, 'wei').toString()
+      const priceFormatted = ethers.utils.parseEther(e.toString())
       // const listingPrice = parseFloat(e)
       setPrice(priceFormatted);
     } catch (error) {

@@ -33,7 +33,7 @@ const Profile = () => {
 
               const seller = marketItem.seller
               const meta = await axios.get(tokenURI)
-              let price = ethers.utils.formatUnits(marketItem.price, 'wei')
+              let price = ethers.utils.formatUnits(marketItem.price, 'ether')
 
               return {
                   image: meta.data.image,
@@ -54,20 +54,6 @@ const Profile = () => {
           await profileItems.map(nft => nft['relist'] = true)
           console.log(profileItems)
           setNfts(profileItems);
-                      
-
-            /*
-            setLoading(true);
-            const allNfts = await getNfts(minterContract);
-            await allNfts.map(nft => {
-              return address.toLowerCase() === nft.owner.toLowerCase() ? nft['relist'] = true : nft['relist'] = false
-            })
-
-            const myNfts = await allNfts.filter(nft => address.toLowerCase() === nft.owner.toLowerCase())
-
-            if (!allNfts) return;
-            setNfts(myNfts);
-            */
             
         } catch (error) {
           console.log({ error });
