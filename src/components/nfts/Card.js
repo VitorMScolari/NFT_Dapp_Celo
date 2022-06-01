@@ -36,7 +36,6 @@ const NftCard = ({ nft }) => {
   // function for updating NFT price
   const relistNft = async () => {
     try {
-
         await performActions(async (kit) => {
           /* user will be prompted to pay the asking process to complete the transaction */
           console.log(price)
@@ -44,10 +43,10 @@ const NftCard = ({ nft }) => {
           // (not tokenId, which tracks the id in the NFT contract)
           const relistItem = await marketContract.methods.relistItem(nft.itemId, price).send({ from: address });
           if (!relistItem) alert("Failed to Re-List NFT." );
+          toast(<NotificationSuccess text="Updating NFT list...." />);
+          // react component that redirects user to the explore page
+          navigate(`/explore`)
         })
-        toast(<NotificationSuccess text="Updating NFT list...." />);
-        // react component that redirects user to the explore page
-        navigate(`/explore`)
       } catch (error) {
         console.log({ error });
         alert("Failed to Re-List NFT." )
