@@ -11,14 +11,17 @@ import { useContractKit } from "@celo-tools/use-contractkit";
 import { ethers } from "ethers";
 
 const NftCard = ({ nft }) => {
-  // const { image, description, externalUrl, owner, name, price, tokenId } = nft;
-
+  
+  // get user wallet address and performActions function from Celo Contract Kit
   const { address, performActions } = useContractKit();
   const navigate = useNavigate()
 
+  // handles the state of the modal
   const [show, setShow] = useState(false);
 
+  // sets price for relisting acording to user input from change price Button
   const [price, setPrice] = useState(0);
+  // creates market contract abstraction
   const marketContract = useMarketContract();
 
   // check if all form data has been filled
@@ -30,16 +33,20 @@ const NftCard = ({ nft }) => {
     setShow(false);
   };
 
+  // function for updating NFT price
   const relistNft = async () => {
     try {
 
         await performActions(async (kit) => {
-          /* user will be prompted to pay the asking proces to complete the transaction */
+          /* user will be prompted to pay the asking process to complete the transaction */
           console.log(price)
-          const relistItem = await marketContract.methods.relistItem(nft.itemId, price).send({ from: address  });
+          // calls relist function from marketplace contract, passing NFT item id, id that keeps track of each market item 
+          // (not tokenId, which tracks the id in the NFT contract)
+          const relistItem = await marketContract.methods.relistItem(nft.itemId, price).send({ from: address });
           if (!relistItem) alert("Failed to Re-List NFT." );
         })
         toast(<NotificationSuccess text="Updating NFT list...." />);
+        // react component that redirects user to the explore page
         navigate(`/explore`)
       } catch (error) {
         console.log({ error });
@@ -48,24 +55,31 @@ const NftCard = ({ nft }) => {
       }
     };
 
-
+  // function for buying listed NFTs
   const buyNft = async () => {
     try {
+        // itemId (id that keeps track of each market item)
         const id = parseInt(nft.itemId)
 
         await performActions(async (kit) => {
+          // user wallet address
           const { defaultAccount } = kit;
-          /* user will be prompted to pay the asking proces to complete the transaction */
+          // market fee charged for buying NFT, determined when deploying the marketplace contract
           const marketFee = 1;
+          // calculation of total price, nft price + fee percentage
           const nftMarketPrice = (nft.price*(100 + marketFee))/100;
+          // parse total price to ether
           const _totalPrice =( ethers.utils.parseUnits(nftMarketPrice.toString(), 'ether')).toString();
           console.log(_totalPrice)
+          // call function from marketContract specifying the exact price of the NFT,
+          // if the price is incorrect wallet will say not able to estimate gas.
           await marketContract.methods.purchaseItem(id).send({ from: defaultAccount, value: _totalPrice });
 
           alert(`You have successfully purchased this NFT!`)
+          // redirects user to profile page
           navigate(`/profile`)
         })
-
+        // updates remove property of nft to true, so the button for buying is updated to Change price (for relisting)
         nft.remove = true
       } catch (error) {
         console.log({ error });
@@ -75,12 +89,12 @@ const NftCard = ({ nft }) => {
     };
 
 
-
+  // gets the price from the form and updates to Ether
   const getPrice = (e) => {
     try {
-      // const priceFormatted = ethers.utils.parseUnits(e, 'wei').toString()
+      // change price to ether so unit is correct
       const priceFormatted = ethers.utils.parseEther(e.toString())
-      // const listingPrice = parseFloat(e)
+      // updates price state
       setPrice(priceFormatted);
     } catch (error) {
       console.log({ error })
@@ -118,6 +132,7 @@ const NftCard = ({ nft }) => {
           <Card.Text className="flex-grow-1">{nft.exteralUrl}</Card.Text>
         </Card.Body>
         <Card.Footer className="d-flex  flex-row justify-content-center text-center">
+          {/*renders buttons conditionally depending on whether or not user is the NFT owner */}
           {!nft.relist && <Button variant="outline-dark" className="rounded-pill px-4 mx-2 card-btn" onClick={buyNft}>Buy</Button>}
           {nft.relist && (
             <>

@@ -10,8 +10,9 @@ contract Marketplace is ReentrancyGuard {
     // Variables
     address payable public immutable feeAccount; // the account that receives fees
     uint public immutable feePercent; // the fee percentage on sales 
-    uint public itemCount; 
+    uint public itemCount; // how many items were listed in the market
 
+    // structure of marketplace items
     struct Item {
         uint itemId;
         IERC721 nft;
@@ -24,6 +25,7 @@ contract Marketplace is ReentrancyGuard {
     // itemId -> Item
     mapping(uint => Item) public items;
 
+    // event for everytime an offer is made
     event Offered(
         uint itemId,
         address indexed nft,
@@ -31,6 +33,7 @@ contract Marketplace is ReentrancyGuard {
         uint price,
         address indexed seller
     );
+    // event for everytime an item is bought
     event Bought(
         uint itemId,
         address indexed nft,
@@ -40,12 +43,15 @@ contract Marketplace is ReentrancyGuard {
         address indexed buyer
     );
 
+    // sets up account that receives the fees and the fee percentage
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
     }
 
     // Make item to offer on the marketplace
+    // @param nft the address of the contract where the NFT was minted
+    // @param tokenId the id of the NFT, comes from the NFT contract
     function makeItem(ERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
         require(_price > 0, "Price must be greater than zero");
         // increment itemCount

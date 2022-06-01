@@ -12,16 +12,21 @@ import { ethers } from "ethers";
 
 
 const AddNfts = () => {
+  // state for the form data
   const [description, setDescription] = useState("");
   const [exteralUrl, setExteralUrl] = useState("");
   const [ipfsImage, setIpfsImage] = useState("");
   const [name, setName] = useState("");
   const [show, setShow] = useState(false);
-  const navigate = useNavigate();
-
   const [price, setPrice] = useState(0);
 
+  // allows to redirect user after a function is called
+  const navigate = useNavigate();
+
+  // get wallet address
   const { performActions, address } = useContractKit();
+
+  // contract abstractions
   const minterContract = useMinterContract();
   const marketContract = useMarketContract();
 
@@ -35,10 +40,13 @@ const AddNfts = () => {
     setShow(false);
   };
 
+  // calls function minter from utils folder to mint the NFT and list it on the market
   const addNft = async (data) => {
     try {
+        // mint the NFT and list it on the marketplace
         await createNft(minterContract, marketContract, price, performActions, data);
         toast(<NotificationSuccess text="Updating NFT list...." />);
+        // redirect user to profile page
         navigate(`/profile`)
       } catch (error) {
         console.log({ error });
@@ -46,6 +54,7 @@ const AddNfts = () => {
       }
     };
 
+  // parses the price into Ether format from form input
   const getPrice = (e) => {
     try {
       const listingPrice = ethers.utils.parseEther(e.toString())

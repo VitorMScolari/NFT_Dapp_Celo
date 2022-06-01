@@ -11,9 +11,10 @@ import "@openzeppelin/contracts/security/PullPayment.sol";
 contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment {
     using Counters for Counters.Counter;
 
+    // counts the number of NFTs
     Counters.Counter private _tokenIdCounter;
 
-    // Constants
+    // Maximum number of NFTs that can be created
     uint256 public constant TOTAL_SUPPLY = 10_000;
 
     /// @dev Base token URI used as a prefix by tokenURI().
@@ -24,11 +25,14 @@ contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment
     }
 
     function safeMint(address to, string memory uri) public payable {
+        // get current token counter to keep track of NFTs
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId < TOTAL_SUPPLY, "Max supply reached");
 
         _tokenIdCounter.increment();
+        // mints the NFT
         _safeMint(to, tokenId);
+        // sets link to URI for the NFT
         _setTokenURI(tokenId, uri);
     }
 
@@ -41,10 +45,12 @@ contract NFT is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, PullPayment
         super._beforeTokenTransfer(from, to, tokenId);
     }
 
+    // deletes the URI for the NFT
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
     }
 
+    // sets the URI for the NFT
     function tokenURI(uint256 tokenId)
         public
         view

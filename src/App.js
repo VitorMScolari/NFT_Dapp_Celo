@@ -14,7 +14,7 @@ const App = function AppWrapper() {
       <BrowserRouter>
         <Navigation />
         <Routes>
-        <Route path="/" exact element={<Explore />} />
+          <Route path="/" exact element={<Explore />} />
           <Route path="/NFT_Dapp_Celo" element={<Explore />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile" element={<Profile />} />

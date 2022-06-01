@@ -5,6 +5,7 @@ import { uploadToIpfs } from "../../utils/minter";
 
 
 const AddNfts = ({ save, address }) => {
+  // create state for all the NFT properties coming from the form
   const [description, setDescription] = useState("");
   const [exteralUrl, setExteralUrl] = useState("");
   const [ipfsImage, setIpfsImage] = useState("");

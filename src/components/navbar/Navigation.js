@@ -7,7 +7,7 @@ import './Navigation.css'
 
 
  const Navigation = () => {
-
+     // gets wallet address and connect and destroy from Contract kit to allow user to log in and log out
      const {address, destroy, connect} = useContractKit();
 
      return (
