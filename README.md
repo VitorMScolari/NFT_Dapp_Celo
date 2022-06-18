@@ -1,5 +1,5 @@
 # Website currently hosted at:
-vitormscolari.github.io/nft_dapp_celo/
+## [Project Link](https://vitormscolari.github.io/NFT_Dapp_Celo/)
 
 # Celo React Boilerplate
 This repository contains a simple React boilerplate for Celo projects.
